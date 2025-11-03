@@ -1,70 +1,76 @@
 package com.miplata.ui;
 
-import androidx.core.content.ContextCompat;
-import android.content.*;
+import android.app.AlertDialog;
+import android.content.ComponentName;
+import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.widget.Button;
-import android.widget.TextView;
-
+import android.text.TextUtils;
 import androidx.appcompat.app.AppCompatActivity;
-
+import androidx.fragment.app.Fragment;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.miplata.R;
-import com.miplata.data.Transaction;
-import com.miplata.domain.FinanceManager;
-import com.miplata.listener.FinanceNotificationService;
-
-import java.util.Locale;
+import com.miplata.ui.fragment.AccountFragment;
+import com.miplata.ui.fragment.HomeFragment;
 
 public class MainActivity extends AppCompatActivity {
 
-    private final FinanceManager manager = new FinanceManager();
-    private TextView tvTotals, tvLast;
-    private final Locale CO = Locale.forLanguageTag("es-CO");
-
-    private final BroadcastReceiver rx = new BroadcastReceiver() {
-        @Override public void onReceive(Context c, Intent i) {
-            if (!FinanceNotificationService.ACTION_NEW_TX.equals(i.getAction())) return;
-            Transaction t = new Transaction();
-            t.setAmount(i.getDoubleExtra(FinanceNotificationService.EXTRA_AMOUNT, 0));
-            t.setType(i.getStringExtra(FinanceNotificationService.EXTRA_TYPE));
-            t.setDescription(i.getStringExtra(FinanceNotificationService.EXTRA_DESC));
-            t.setDateMillis(i.getLongExtra(FinanceNotificationService.EXTRA_DATE, System.currentTimeMillis()));
-
-            manager.processTransaction(t);
-
-            tvLast.setText(String.format(CO, "%s | $%,.2f | %s",
-                    t.getType(), t.getAmount(), t.getDescription()));
-
-            tvTotals.setText(String.format(CO,
-                    "Ingresos: $%,.2f\nGastos: $%,.2f",
-                    manager.totalIngresos(), manager.totalGastos()));
-        }
-    };
-
-    @Override protected void onCreate(Bundle b) {
-        super.onCreate(b);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        tvTotals = findViewById(R.id.tvTotals);
-        tvLast   = findViewById(R.id.tvLast);
-        Button btnPerms = findViewById(R.id.btnPerms);
-        btnPerms.setOnClickListener(v ->
-                startActivity(new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)));
+
+        BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
+        bottomNav.setOnNavigationItemSelectedListener(navListener);
+
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new HomeFragment()).commit();
+        }
+
+        if (!isNotificationServiceEnabled()) {
+            showPermissionDialog();
+        }
     }
 
-    @Override protected void onResume() {
-        super.onResume();
-        IntentFilter f = new IntentFilter(FinanceNotificationService.ACTION_NEW_TX);
-        ContextCompat.registerReceiver(
-                this,
-                rx,
-                f,
-                ContextCompat.RECEIVER_NOT_EXPORTED
-        );
+    private boolean isNotificationServiceEnabled() {
+        String pkgName = getPackageName();
+        final String flat = Settings.Secure.getString(getContentResolver(), "enabled_notification_listeners");
+        if (!TextUtils.isEmpty(flat)) {
+            final String[] names = flat.split(":");
+            for (String name : names) {
+                final ComponentName cn = ComponentName.unflattenFromString(name);
+                if (cn != null && TextUtils.equals(pkgName, cn.getPackageName())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
-    @Override protected void onPause() {
-        super.onPause();
-        unregisterReceiver(rx);
+    private void showPermissionDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("Permiso de Notificaciones")
+                .setMessage("Para funcionar correctamente, MiPlata necesita acceso a tus notificaciones. Por favor, activa el permiso en los ajustes.")
+                .setPositiveButton("Ir a Ajustes", (dialog, which) -> {
+                    startActivity(new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS));
+                })
+                .setNegativeButton("Cancelar", null)
+                .show();
     }
+
+    private final BottomNavigationView.OnNavigationItemSelectedListener navListener = item -> {
+        Fragment selectedFragment = null;
+
+        if (item.getItemId() == R.id.nav_home) {
+            selectedFragment = new HomeFragment();
+        } else if (item.getItemId() == R.id.nav_account) {
+            selectedFragment = new AccountFragment();
+        }
+
+        if (selectedFragment != null) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, selectedFragment).commit();
+        }
+
+        return true;
+    };
 }
