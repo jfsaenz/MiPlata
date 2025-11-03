@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/windowBackground"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".ui.CreateAccountActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:text="Crear Cuenta"
+        android:textColor="@color/textColorPrimary"
+        android:textSize="28sp" />
+
+    <EditText
+        android:id="@+id/etUsername"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/edit_text_background"
+        android:hint="Nombre de usuario"
+        android:inputType="text"
+        android:padding="12dp"
+        android:textColor="@color/textColorPrimary"
+        android:textColorHint="@color/textColorSecondary" />
+
+    <EditText
+        android:id="@+id/etPin"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/edit_text_background"
+        android:hint="PIN (4-dígitos)"
+        android:inputType="numberPassword"
+        android:maxLength="4"
+        android:padding="12dp"
+        android:textColor="@color/textColorPrimary"
+        android:textColorHint="@color/textColorSecondary" />
+
+    <Button
+        android:id="@+id/btnCreate"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/button_background"
+        android:text="Crear"
+        android:textColor="@color/white" />
+
+</LinearLayout>
