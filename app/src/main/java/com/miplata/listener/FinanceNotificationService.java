@@ -1,18 +1,24 @@
 package com.miplata.listener;
 
 import android.app.Notification;
-import android.content.Intent;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
+import com.miplata.data.AppDatabase;
 import com.miplata.data.Transaction;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class FinanceNotificationService extends NotificationListenerService {
 
-    public static final String ACTION_NEW_TX = "com.miplata.NEW_TX";
-    public static final String EXTRA_AMOUNT = "amount";
-    public static final String EXTRA_TYPE   = "type";
-    public static final String EXTRA_DESC   = "desc";
-    public static final String EXTRA_DATE   = "date";
+    private AppDatabase db;
+    private ExecutorService executorService;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        db = AppDatabase.getDatabase(getApplication());
+        executorService = Executors.newSingleThreadExecutor();
+    }
 
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
@@ -26,11 +32,8 @@ public class FinanceNotificationService extends NotificationListenerService {
         Transaction t = NotificationParser.parse(payload);
         if (t == null) return;
 
-        Intent i = new Intent(ACTION_NEW_TX);
-        i.putExtra(EXTRA_AMOUNT, t.getAmount());
-        i.putExtra(EXTRA_TYPE,   t.getType());
-        i.putExtra(EXTRA_DESC,   t.getDescription());
-        i.putExtra(EXTRA_DATE,   t.getDateMillis());
-        sendBroadcast(i);
+        executorService.execute(() -> {
+            db.transactionDao().insert(t);
+        });
     }
 }

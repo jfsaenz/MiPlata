@@ -12,6 +12,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.miplata.R;
 import com.miplata.ui.fragment.AccountFragment;
 import com.miplata.ui.fragment.HomeFragment;
+import com.miplata.ui.fragment.MovementsFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -63,6 +64,8 @@ public class MainActivity extends AppCompatActivity {
 
         if (item.getItemId() == R.id.nav_home) {
             selectedFragment = new HomeFragment();
+        } else if (item.getItemId() == R.id.nav_movements) {
+            selectedFragment = new MovementsFragment();
         } else if (item.getItemId() == R.id.nav_account) {
             selectedFragment = new AccountFragment();
         }
