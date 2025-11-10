@@ -26,10 +26,9 @@ public class SelectInterestsActivity extends AppCompatActivity {
     private int userId;
     private User currentUser;
 
+    // --- LISTA DE INTERESES ACTUALIZADA ---
     private final List<String> allInterests = Arrays.asList(
-        "Ropa", "Comida", "Viajes", "Hoteles", "Transporte",
-        "Tecnología", "Entretenimiento", "Salud", "Deportes",
-        "Hogar", "Educación", "Mascotas", "Regalos", "Belleza"
+        "Ocio", "Comida", "Ropa", "Gimnasio", "Hogar", "Mascotas", "Belleza"
     );
 
     @Override
@@ -48,23 +47,22 @@ public class SelectInterestsActivity extends AppCompatActivity {
 
         btnSave.setOnClickListener(v -> saveInterests());
 
-        // Carga los datos del usuario actual y luego puebla los checkboxes
         loadCurrentUserAndPopulate();
     }
 
     private void loadCurrentUserAndPopulate() {
         if (userId != -1) {
             executorService.execute(() -> {
-                currentUser = db.userDao().findById(userId);
+                currentUser = db.userDao().findByIdSync(userId);
                 runOnUiThread(this::populateInterests);
             });
         }
     }
 
     private void populateInterests() {
-        interestsContainer.removeAllViews(); // Limpia vistas anteriores
+        interestsContainer.removeAllViews();
         List<String> userInterests = new ArrayList<>();
-        if (currentUser != null && currentUser.getInterests() != null) {
+        if (currentUser != null && currentUser.getInterests() != null && !currentUser.getInterests().isEmpty()) {
             userInterests.addAll(Arrays.asList(currentUser.getInterests().split(",")));
         }
 
@@ -73,7 +71,7 @@ public class SelectInterestsActivity extends AppCompatActivity {
             checkBox.setText(interest);
             checkBox.setTextColor(getResources().getColor(R.color.textColorPrimary));
             if (userInterests.contains(interest)) {
-                checkBox.setChecked(true); // Marca los intereses ya guardados
+                checkBox.setChecked(true);
             }
             interestsContainer.addView(checkBox);
         }
@@ -97,7 +95,6 @@ public class SelectInterestsActivity extends AppCompatActivity {
             db.userDao().updateUser(currentUser);
             runOnUiThread(() -> {
                 Toast.makeText(this, "Gustos guardados", Toast.LENGTH_SHORT).show();
-                // Si es la primera vez, llévalo a la pantalla principal
                 if (getIntent().getBooleanExtra("isFirstTime", false)) {
                     Intent intent = new Intent(SelectInterestsActivity.this, MainActivity.class);
                     startActivity(intent);

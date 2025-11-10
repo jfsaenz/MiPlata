@@ -4,11 +4,18 @@
     <color name="colorPrimaryDark">#144842</color>
     <color name="colorAccent">#144842</color>
 
-    <color name="windowBackground">#212121</color> <!-- Gris oscuro en lugar de negro -->
+    <color name="windowBackground">#212121</color>
     <color name="cardBackground">#303030</color>
     <color name="textColorPrimary">#FFFFFF</color>
     <color name="textColorSecondary">#BDBDBD</color>
 
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Colores para Gráficos -->
+    <color name="chartColor1">#FFC107</color> <!-- Ámbar -->
+    <color name="chartColor2">#03A9F4</color> <!-- Azul Claro -->
+    <color name="chartColor3">#4CAF50</color> <!-- Verde -->
+    <color name="chartColor4">#E91E63</color> <!-- Rosa -->
+
 </resources>

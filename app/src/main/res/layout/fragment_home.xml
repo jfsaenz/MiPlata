@@ -63,7 +63,7 @@
                     android:textSize="18sp" />
 
                 <com.github.mikephil.charting.charts.PieChart
-                    android:id="@+id/pieChart"
+                    android:id="@+id/monthly_expenses_chart"
                     android:layout_width="match_parent"
                     android:layout_height="300dp" />
 
@@ -90,8 +90,8 @@
                     android:textColor="@color/textColorSecondary"
                     android:textSize="18sp" />
 
-                <com.github.mikephil.charting.charts.BarChart
-                    android:id="@+id/barChart"
+                <com.github.mikephil.charting.charts.PieChart
+                    android:id="@+id/balance_by_account_chart"
                     android:layout_width="match_parent"
                     android:layout_height="300dp" />
 

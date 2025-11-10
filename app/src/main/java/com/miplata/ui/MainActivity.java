@@ -14,6 +14,7 @@ import com.miplata.ui.fragment.AccountFragment;
 import com.miplata.ui.fragment.GoalsFragment;
 import com.miplata.ui.fragment.HomeFragment;
 import com.miplata.ui.fragment.MovementsFragment;
+import com.miplata.ui.fragment.RewardsFragment; // <-- Importar el nuevo fragmento
 
 public class MainActivity extends AppCompatActivity {
 
@@ -63,13 +64,16 @@ public class MainActivity extends AppCompatActivity {
     private final BottomNavigationView.OnNavigationItemSelectedListener navListener = item -> {
         Fragment selectedFragment = null;
 
-        if (item.getItemId() == R.id.nav_home) {
+        int itemId = item.getItemId();
+        if (itemId == R.id.nav_home) {
             selectedFragment = new HomeFragment();
-        } else if (item.getItemId() == R.id.nav_movements) {
+        } else if (itemId == R.id.nav_movements) {
             selectedFragment = new MovementsFragment();
-        } else if (item.getItemId() == R.id.nav_goals) {
+        } else if (itemId == R.id.nav_goals) {
             selectedFragment = new GoalsFragment();
-        } else if (item.getItemId() == R.id.nav_account) {
+        } else if (itemId == R.id.nav_rewards) { // <-- LÓGICA AÑADIDA
+            selectedFragment = new RewardsFragment();
+        } else if (itemId == R.id.nav_account) {
             selectedFragment = new AccountFragment();
         }
 
