@@ -48,10 +48,12 @@ dependencies {
     implementation(libs.room.runtime)
     annotationProcessor(libs.room.compiler)
 
-    // --- CORRECCIÓN DE TENSORFLOW LITE ---
-    // Versión más moderna de la librería de texto
+    // --- CORRECCIÓN DEFINITIVA DE TENSORFLOW LITE ---
+    // La librería de tareas de texto
     implementation("org.tensorflow:tensorflow-lite-task-text:0.4.4")
-    // Librería "traductora" para operaciones modernas
+    // Se añade la librería base de TFLite para forzar un runtime moderno y compatible
+    implementation("org.tensorflow:tensorflow-lite:2.16.1")
+    // La librería "traductora" para operaciones personalizadas o más nuevas
     implementation("org.tensorflow:tensorflow-lite-select-tf-ops:2.16.1")
 
     testImplementation(libs.junit)

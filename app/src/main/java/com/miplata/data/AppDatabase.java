@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-@Database(entities = {Transaction.class, User.class, Goal.class, Category.class}, version = 6, exportSchema = false)
+@Database(entities = {Transaction.class, User.class, Goal.class, Category.class}, version = 7, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     public abstract TransactionDao transactionDao();
@@ -52,13 +52,36 @@ public abstract class AppDatabase extends RoomDatabase {
         }
     };
 
+    // --- INICIO DE LA CORRECCIÓN PROFESIONAL ---
+    static final Migration MIGRATION_6_7 = new Migration(6, 7) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            // 1. Añadimos la columna userId a la tabla de transacciones. 
+            // Ponemos un valor por defecto (0) para las filas existentes, ya que no podemos saber a qué usuario pertenecían.
+            database.execSQL("ALTER TABLE `transactions` ADD COLUMN `userId` INTEGER NOT NULL DEFAULT 0");
+
+            // 2. Creamos una nueva tabla temporal con la estructura CORRECTA, incluyendo la llave foránea.
+            database.execSQL("CREATE TABLE `transactions_new` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `amount` REAL NOT NULL, `dateMillis` INTEGER NOT NULL, `type` TEXT, `description` TEXT, `category` TEXT, `userId` INTEGER NOT NULL, FOREIGN KEY(`userId`) REFERENCES `users`(`id`) ON DELETE CASCADE)");
+
+            // 3. Copiamos los datos de la tabla vieja a la nueva.
+            database.execSQL("INSERT INTO `transactions_new` (id, amount, dateMillis, type, description, category, userId) SELECT id, amount, dateMillis, type, description, category, userId FROM `transactions`");
+
+            // 4. Borramos la tabla vieja.
+            database.execSQL("DROP TABLE `transactions`");
+
+            // 5. Renombramos la tabla nueva para que tenga el nombre original.
+            database.execSQL("ALTER TABLE `transactions_new` RENAME TO `transactions`");
+        }
+    };
+    // --- FIN DE LA CORRECCIÓN PROFESIONAL ---
+
     public static AppDatabase getDatabase(final Context context) {
         if (INSTANCE == null) {
             synchronized (AppDatabase.class) {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                             AppDatabase.class, "miplata_database")
-                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
+                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
                             .build();
                 }
             }
