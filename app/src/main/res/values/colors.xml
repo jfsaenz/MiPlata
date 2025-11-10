@@ -2,12 +2,13 @@
 <resources>
     <color name="colorPrimary">#1A5A53</color>
     <color name="colorPrimaryDark">#144842</color>
-    <color name="colorAccent">#4DB6AC</color>
-    <color name="windowBackground">#1F1F1F</color>
-    <color name="cardBackground">#2C2C2C</color>
+    <color name="colorAccent">#144842</color>
+
+    <color name="windowBackground">#212121</color> <!-- Gris oscuro en lugar de negro -->
+    <color name="cardBackground">#303030</color>
     <color name="textColorPrimary">#FFFFFF</color>
-    <color name="textColorSecondary">#B0B0B0</color>
-    
+    <color name="textColorSecondary">#BDBDBD</color>
+
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 </resources>

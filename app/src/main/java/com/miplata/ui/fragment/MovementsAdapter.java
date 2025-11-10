@@ -14,11 +14,17 @@ import java.util.Locale;
 
 public class MovementsAdapter extends RecyclerView.Adapter<MovementsAdapter.ViewHolder> {
 
-    private List<Transaction> movements;
-    private final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
+    public interface OnMovementClickListener {
+        void onMovementClick(Transaction transaction);
+        void onMovementLongClick(Transaction transaction);
+    }
 
-    public MovementsAdapter(List<Transaction> movements) {
+    private List<Transaction> movements;
+    private final OnMovementClickListener clickListener;
+
+    public MovementsAdapter(List<Transaction> movements, OnMovementClickListener clickListener) {
         this.movements = movements;
+        this.clickListener = clickListener;
     }
 
     @NonNull
@@ -30,18 +36,7 @@ public class MovementsAdapter extends RecyclerView.Adapter<MovementsAdapter.View
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Transaction transaction = movements.get(position);
-        holder.tvDescription.setText(transaction.getDescription());
-        holder.tvDate.setText(sdf.format(transaction.getDateMillis()));
-
-        String formattedAmount = String.format(Locale.getDefault(), "$%,.2f", transaction.getAmount());
-        if ("DEBIT".equals(transaction.getType())) {
-            holder.tvAmount.setText("- " + formattedAmount);
-            holder.tvAmount.setTextColor(holder.itemView.getContext().getResources().getColor(android.R.color.holo_red_light));
-        } else {
-            holder.tvAmount.setText("+ " + formattedAmount);
-            holder.tvAmount.setTextColor(holder.itemView.getContext().getResources().getColor(android.R.color.holo_green_light));
-        }
+        holder.bind(movements.get(position), clickListener);
     }
 
     @Override
@@ -54,14 +49,43 @@ public class MovementsAdapter extends RecyclerView.Adapter<MovementsAdapter.View
         notifyDataSetChanged();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvDescription, tvDate, tvAmount;
+    static class ViewHolder extends RecyclerView.ViewHolder {
+        TextView tvDescription, tvDate, tvAmount, tvCategory;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvDescription = itemView.findViewById(R.id.tv_description);
             tvDate = itemView.findViewById(R.id.tv_date);
             tvAmount = itemView.findViewById(R.id.tv_amount);
+            tvCategory = itemView.findViewById(R.id.tv_category);
+        }
+
+        public void bind(final Transaction transaction, final OnMovementClickListener clickListener) {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
+            tvDescription.setText(transaction.getDescription());
+            tvDate.setText(sdf.format(transaction.getDateMillis()));
+
+            if (transaction.getCategory() != null && !transaction.getCategory().isEmpty()) {
+                tvCategory.setText(transaction.getCategory());
+                tvCategory.setVisibility(View.VISIBLE);
+            } else {
+                tvCategory.setVisibility(View.GONE);
+            }
+
+            String formattedAmount = String.format(Locale.getDefault(), "$%,.2f", transaction.getAmount());
+            if ("DEBIT".equals(transaction.getType())) {
+                tvAmount.setText("- " + formattedAmount);
+                tvAmount.setTextColor(itemView.getContext().getResources().getColor(android.R.color.holo_red_light));
+            } else {
+                tvAmount.setText("+ " + formattedAmount);
+                tvAmount.setTextColor(itemView.getContext().getResources().getColor(android.R.color.holo_green_light));
+            }
+
+            itemView.setOnClickListener(v -> clickListener.onMovementClick(transaction));
+            itemView.setOnLongClickListener(v -> {
+                clickListener.onMovementLongClick(transaction);
+                return true;
+            });
         }
     }
 }

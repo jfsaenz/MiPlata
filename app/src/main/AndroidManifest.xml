@@ -3,7 +3,9 @@
 
     <application
         android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Material3.DayNight.NoActionBar">
 
@@ -22,6 +24,22 @@
 
         <activity
             android:name=".ui.CreateAccountActivity"
+            android:exported="false"/>
+
+        <activity
+            android:name=".ui.AddMovementActivity"
+            android:exported="false"/>
+
+        <activity
+            android:name=".ui.SelectInterestsActivity"
+            android:exported="false"/>
+
+        <activity
+            android:name=".ui.AddGoalActivity"
+            android:exported="false"/>
+
+        <activity
+            android:name=".ui.ManageCategoriesActivity"
             android:exported="false"/>
 
         <service

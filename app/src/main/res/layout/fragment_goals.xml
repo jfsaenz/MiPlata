@@ -6,13 +6,13 @@
     android:background="@color/windowBackground">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_movements"
+        android:id="@+id/rv_goals"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="8dp" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_add_movement"
+        android:id="@+id/fab_add_goal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
