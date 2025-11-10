@@ -1,12 +1,18 @@
 package com.miplata.ui;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.TextUtils;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.miplata.R;
@@ -15,6 +21,23 @@ import com.miplata.ui.fragment.HomeFragment;
 import com.miplata.ui.fragment.MovementsFragment;
 
 public class MainActivity extends AppCompatActivity {
+
+    // --- INICIO: Lógica para el permiso de POST_NOTIFICATIONS ---
+    private final ActivityResultLauncher<String> requestPermissionLauncher = 
+        registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+            // No necesitamos hacer nada especial si se concede o deniega, 
+            // la app funcionará igualmente. La notificación de confirmación simplemente no aparecerá.
+        });
+
+    private void requestPostNotificationsPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { // Android 13+
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                // Muestra el diálogo del sistema para pedir el permiso.
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+            }
+        }
+    }
+    // --- FIN: Lógica para el permiso de POST_NOTIFICATIONS ---
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,9 +51,11 @@ public class MainActivity extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new HomeFragment()).commit();
         }
 
+        // Comprobamos y pedimos ambos permisos al iniciar
         if (!isNotificationServiceEnabled()) {
             showPermissionDialog();
         }
+        requestPostNotificationsPermission(); // <-- LLAMADA AL NUEVO MÉTODO
     }
 
     private boolean isNotificationServiceEnabled() {
@@ -50,8 +75,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void showPermissionDialog() {
         new AlertDialog.Builder(this)
-                .setTitle("Permiso de Notificaciones")
-                .setMessage("Para funcionar correctamente, MiPlata necesita acceso a tus notificaciones. Por favor, activa el permiso en los ajustes.")
+                .setTitle("Permiso de Lectura de Notificaciones")
+                .setMessage("Para registrar transacciones automáticamente, MiPlata necesita permiso para LEER tus notificaciones. Por favor, activa el permiso en la siguiente pantalla.")
                 .setPositiveButton("Ir a Ajustes", (dialog, which) -> {
                     startActivity(new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS));
                 })

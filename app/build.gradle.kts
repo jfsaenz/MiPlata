@@ -31,6 +31,10 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    
+    aaptOptions {
+        noCompress += listOf("tflite")
+    }
 }
 
 dependencies {
@@ -43,6 +47,12 @@ dependencies {
     
     implementation(libs.room.runtime)
     annotationProcessor(libs.room.compiler)
+
+    // --- CORRECCIÓN DE TENSORFLOW LITE ---
+    // Versión más moderna de la librería de texto
+    implementation("org.tensorflow:tensorflow-lite-task-text:0.4.4")
+    // Librería "traductora" para operaciones modernas
+    implementation("org.tensorflow:tensorflow-lite-select-tf-ops:2.16.1")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
