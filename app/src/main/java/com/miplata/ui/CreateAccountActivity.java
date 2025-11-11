@@ -1,6 +1,9 @@
 package com.miplata.ui;
 
 import android.app.AlertDialog;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -53,11 +56,22 @@ public class CreateAccountActivity extends AppCompatActivity {
                     User newUser = new User();
                     newUser.setUsername(username);
                     newUser.setPin(pin);
-                    db.userDao().insert(newUser);
+                    long newUserId = db.userDao().insert(newUser);
 
                     runOnUiThread(() -> {
+                        // Guardar el ID del nuevo usuario para las siguientes pantallas
+                        SharedPreferences prefs = getSharedPreferences(LoginActivity.PREFS_NAME, Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = prefs.edit();
+                        editor.putInt(LoginActivity.KEY_USER_ID, (int) newUserId);
+                        editor.apply();
+
                         Toast.makeText(this, "Cuenta creada exitosamente", Toast.LENGTH_SHORT).show();
-                        finish();
+                        
+                        // --- CAMBIO DE NAVEGACIÓN ---
+                        // Ahora, en lugar de cerrar, vamos a la pantalla de saldo inicial
+                        Intent intent = new Intent(CreateAccountActivity.this, SetIncomeActivity.class);
+                        startActivity(intent);
+                        finish(); // Cierra esta actividad para que el usuario no pueda volver
                     });
                 }
             });

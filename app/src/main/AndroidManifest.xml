@@ -34,6 +34,11 @@
             android:name=".ui.SelectInterestsActivity"
             android:exported="false"/>
 
+        <!-- Actividad Nueva para el Saldo Inicial -->
+        <activity
+            android:name=".ui.SetIncomeActivity"
+            android:exported="false"/>
+
         <activity
             android:name=".ui.AddGoalActivity"
             android:exported="false"/>
@@ -43,7 +48,7 @@
             android:exported="false"/>
 
         <service
-            android:name=".listener.FinanceNotificationService" 
+            android:name=".listener.FinanceNotificationService"
             android:label="MiPlata Listener"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
             android:exported="true">
