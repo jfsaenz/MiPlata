@@ -30,14 +30,12 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         // --- LÓGICA DE SESIÓN RESTAURADA ---
-        // Comprueba si el usuario ya ha iniciado sesión.
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         if (prefs.contains(KEY_USER_ID)) {
-            // Si ya hay un ID de usuario, salta directamente a la pantalla principal.
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent);
-            finish(); // Cierra LoginActivity para que el usuario no pueda volver atrás.
-            return; // Detiene la ejecución de onCreate para no mostrar el layout de login.
+            finish(); 
+            return; 
         }
         // --- FIN DE LA LÓGICA DE SESIÓN ---
 
@@ -62,10 +60,10 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             executorService.execute(() -> {
-                User user = db.userDao().findByCredentials(username, pin);
+                // --- CORRECCIÓN FINAL: Se usa el nombre de método correcto 'login' ---
+                User user = db.userDao().login(username, pin);
                 runOnUiThread(() -> {
                     if (user != null) {
-                        // Guarda el ID de usuario para mantener la sesión abierta.
                         prefs.edit().putInt(KEY_USER_ID, user.getId()).apply();
 
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);

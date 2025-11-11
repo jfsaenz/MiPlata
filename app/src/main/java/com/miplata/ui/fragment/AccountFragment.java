@@ -62,7 +62,8 @@ public class AccountFragment extends Fragment {
         btnDeleteAccount.setOnClickListener(v -> {
             if (userId != -1) {
                 executorService.execute(() -> {
-                    db.userDao().deleteUser(userId);
+                    // --- CORRECCIÓN FINAL: Se usa el nombre de método correcto ---
+                    db.userDao().deleteUserById(userId);
 
                     SharedPreferences prefs = getActivity().getSharedPreferences(LoginActivity.PREFS_NAME, Context.MODE_PRIVATE);
                     prefs.edit().remove(LoginActivity.KEY_USER_ID).apply();
